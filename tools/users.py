@@ -7,7 +7,7 @@ credentials = open('credentials', 'r')
 client_id = credentials.readline().strip(' \t\n\r')
 client_secret = credentials.readline().strip(' \t\n\r')
 
-reddit = praw.Reddit(client_id=client_id, client_secret=client_secret, user_agent='atlas_bot')
+reddit = praw.Reddit(client_id=client_id, client_secret=client_secret, user_agent='collage_bot')
 
 users = set()
 
@@ -16,7 +16,7 @@ users.add("MoonShinez");
 users.add("Shovel_Ship");
 users.add("Zequez");
 
-for submission in reddit.subreddit('placeAtlas').new(limit=10000):
+for submission in reddit.subreddit('placeCollage').new(limit=10000):
 	try:
 		users.add(submission.author.name)
 	except AttributeError:

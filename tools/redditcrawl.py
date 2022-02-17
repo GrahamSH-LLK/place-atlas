@@ -9,9 +9,9 @@ client_secret = credentials.readline().strip(' \t\n\r')
 
 startId = 1778
 
-reddit = praw.Reddit(client_id=client_id, client_secret=client_secret, user_agent='atlas_bot')
+reddit = praw.Reddit(client_id=client_id, client_secret=client_secret, user_agent='collage_bot')
 
-for submission in reddit.subreddit('placeAtlas').new(limit=220):
+for submission in reddit.subreddit('placeCollage').new(limit=220):
 	#print(dir(submission))
 	if(submission.link_flair_text == "New Entry"):
 		text = submission.selftext

@@ -1,12 +1,8 @@
-
-
-
-
 /*
 	========================================================================
-	The /r/place Atlas
+	Judicial Branch Collage
 	
-	An Atlas of Reddit's /r/place, with information to each
+	An Collage of Reddit's /r/place, with information to each
 	artwork	of the canvas provided by the community.
 	
 	Copyright (C) 2017 Roland Rytz <roland@draemm.li>
@@ -19,369 +15,373 @@
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 	For more information, see:
-	https://draemm.li/various/place-atlas/license.txt
+	https://draemm.li/various/place-collage/license.txt
 	
 	========================================================================
 */
 
+function initDraw() {
+  var finishButton = document.getElementById("finishButton");
+  var resetButton = document.getElementById("resetButton");
+  var undoButton = document.getElementById("undoButton");
+  var redoButton = document.getElementById("redoButton");
+  var highlightUnchartedLabel = document.getElementById(
+    "highlightUnchartedLabel"
+  );
 
-function initDraw(){
+  var objectInfoBox = document.getElementById("objectInfo");
+  var hintText = document.getElementById("hint");
 
-	var finishButton = document.getElementById("finishButton");
-	var resetButton = document.getElementById("resetButton");
-	var undoButton = document.getElementById("undoButton");
-	var redoButton = document.getElementById("redoButton");
-	var highlightUnchartedLabel = document.getElementById("highlightUnchartedLabel");
-	
-	var objectInfoBox = document.getElementById("objectInfo");
-	var hintText = document.getElementById("hint");
-	
-	var exportButton = document.getElementById("exportButton");
-	var cancelButton = document.getElementById("cancelButton");
+  var exportButton = document.getElementById("exportButton");
+  var cancelButton = document.getElementById("cancelButton");
 
-	var exportOverlay = document.getElementById("exportOverlay");
-	var exportCloseButton = document.getElementById("exportCloseButton");
+  var exportOverlay = document.getElementById("exportOverlay");
+  var exportCloseButton = document.getElementById("exportCloseButton");
 
-	var rShiftPressed = false;
-	var lShiftPressed = false;
-	var shiftPressed = false;
+  var rShiftPressed = false;
+  var lShiftPressed = false;
+  var shiftPressed = false;
 
-	var backgroundCanvas = document.createElement("canvas");
-	backgroundCanvas.width = 1000;
-	backgroundCanvas.height = 1000;
-	var backgroundContext = backgroundCanvas.getContext("2d");
+  var backgroundCanvas = document.createElement("canvas");
+  backgroundCanvas.width = 1000;
+  backgroundCanvas.height = 1000;
+  var backgroundContext = backgroundCanvas.getContext("2d");
 
-	var highlightUncharted = true;
+  var highlightUncharted = true;
 
-	renderBackground();
+  renderBackground();
 
-	container.style.cursor = "crosshair";
-	
-	var path = [];
-	var drawing = true;
+  container.style.cursor = "crosshair";
 
-	var undoHistory = [];
+  var path = [];
+  var drawing = true;
 
-	var lastPos = [0, 0];
+  var undoHistory = [];
 
-	render(path);
+  var lastPos = [0, 0];
 
-	container.addEventListener("mousedown", function(e){
-		lastPos = [
-			 e.clientX
-			,e.clientY
-		];
-	});
+  render(path);
 
-	function getCanvasCoords(x, y){
-		x = x - container.offsetLeft;
-		y = y - container.offsetTop;
+  container.addEventListener("mousedown", function (e) {
+    lastPos = [e.clientX, e.clientY];
+  });
 
-		var pos = [
-			 ~~((x - (container.clientWidth/2  - innerContainer.clientWidth/2  + zoomOrigin[0]))/zoom)+0.5
-			,~~((y - (container.clientHeight/2 - innerContainer.clientHeight/2 + zoomOrigin[1]))/zoom)+0.5
-		];
-		
-		if(shiftPressed && path.length > 0){
-			var previous = path[path.length-1];
-			
-			if(Math.abs(pos[1] - previous[1]) > Math.abs(pos[0] - previous[0]) ){
-				pos[0] = previous[0];
-			} else {
-				pos[1] = previous[1];
-			}
-		}
+  function getCanvasCoords(x, y) {
+    x = x - container.offsetLeft;
+    y = y - container.offsetTop;
 
-		return pos;
-	}
+    var pos = [
+      ~~(
+        (x -
+          (container.clientWidth / 2 -
+            innerContainer.clientWidth / 2 +
+            zoomOrigin[0])) /
+        zoom
+      ) + 0.5,
+      ~~(
+        (y -
+          (container.clientHeight / 2 -
+            innerContainer.clientHeight / 2 +
+            zoomOrigin[1])) /
+        zoom
+      ) + 0.5,
+    ];
 
-	container.addEventListener("mouseup", function(e){
-		
+    if (shiftPressed && path.length > 0) {
+      var previous = path[path.length - 1];
 
-		if(Math.abs(lastPos[0] - e.clientX) + Math.abs(lastPos[1] - e.clientY) <= 4 && drawing){
+      if (Math.abs(pos[1] - previous[1]) > Math.abs(pos[0] - previous[0])) {
+        pos[0] = previous[0];
+      } else {
+        pos[1] = previous[1];
+      }
+    }
 
-			var coords = getCanvasCoords(e.clientX, e.clientY);
-			
-			path.push(coords);
-			render(path);
+    return pos;
+  }
 
-			undoHistory = [];
-			redoButton.disabled = true;
-			undoButton.disabled = false;
+  container.addEventListener("mouseup", function (e) {
+    if (
+      Math.abs(lastPos[0] - e.clientX) + Math.abs(lastPos[1] - e.clientY) <=
+        4 &&
+      drawing
+    ) {
+      var coords = getCanvasCoords(e.clientX, e.clientY);
 
-			if(path.length >= 3){
-				finishButton.disabled = false;
-			}
-		}
-	});
+      path.push(coords);
+      render(path);
 
-	window.addEventListener("mousemove", function(e){
-		
-		if(!dragging && drawing && path.length > 0){
-			
-			var coords = getCanvasCoords(e.clientX, e.clientY);
-			render(path.concat([coords]));
-		}
-		
-	});
+      undoHistory = [];
+      redoButton.disabled = true;
+      undoButton.disabled = false;
 
-	window.addEventListener("keyup", function(e){
-		if(e.key == "Enter"){
-			finish();
-		} else if(e.key == "z" && e.ctrlKey){
-			undo();
-		} else if(e.key == "y" && e.ctrlKey){
-			redo();
-		} else if(e.key == "Escape"){
-			exportOverlay.style.display = "none";
-		} else if (e.key === "Shift" ){
-			if(e.code === "ShiftRight"){
-				rShiftPressed = false;
-			} else if(e.code === "ShiftLeft"){
-				lShiftPressed = false;
-			}
-			shiftPressed = rShiftPressed || lShiftPressed;
-		}
-	});
+      if (path.length >= 3) {
+        finishButton.disabled = false;
+      }
+    }
+  });
 
-	window.addEventListener("keydown", function(e){
-		if (e.key === "Shift" ){
-			if(e.code === "ShiftRight"){
-				rShiftPressed = true;
-			} else if(e.code === "ShiftLeft"){
-				lShiftPressed = true;
-			}
-			shiftPressed = rShiftPressed || lShiftPressed;
-		}
-	});
+  window.addEventListener("mousemove", function (e) {
+    if (!dragging && drawing && path.length > 0) {
+      var coords = getCanvasCoords(e.clientX, e.clientY);
+      render(path.concat([coords]));
+    }
+  });
 
-	finishButton.addEventListener("click", function(e){
-		finish();
-	});
+  window.addEventListener("keyup", function (e) {
+    if (e.key == "Enter") {
+      finish();
+    } else if (e.key == "z" && e.ctrlKey) {
+      undo();
+    } else if (e.key == "y" && e.ctrlKey) {
+      redo();
+    } else if (e.key == "Escape") {
+      exportOverlay.style.display = "none";
+    } else if (e.key === "Shift") {
+      if (e.code === "ShiftRight") {
+        rShiftPressed = false;
+      } else if (e.code === "ShiftLeft") {
+        lShiftPressed = false;
+      }
+      shiftPressed = rShiftPressed || lShiftPressed;
+    }
+  });
 
-	undoButton.addEventListener("click", function(e){
-		undo();
-	});
+  window.addEventListener("keydown", function (e) {
+    if (e.key === "Shift") {
+      if (e.code === "ShiftRight") {
+        rShiftPressed = true;
+      } else if (e.code === "ShiftLeft") {
+        lShiftPressed = true;
+      }
+      shiftPressed = rShiftPressed || lShiftPressed;
+    }
+  });
 
-	redoButton.addEventListener("click", function(e){
-		redo();
-	});
+  finishButton.addEventListener("click", function (e) {
+    finish();
+  });
 
-	resetButton.addEventListener("click", function(e){
-		reset();
-	});
-	
-	cancelButton.addEventListener("click", function(e){
-		reset();
-	});
+  undoButton.addEventListener("click", function (e) {
+    undo();
+  });
 
-	document.getElementById("nameField").addEventListener("keyup", function(e){
-		if(e.key == "Enter"){
-			exportJson();
-		}
-	});
+  redoButton.addEventListener("click", function (e) {
+    redo();
+  });
 
-	document.getElementById("websiteField").addEventListener("keyup", function(e){
-		if(e.key == "Enter"){
-			exportJson();
-		}
-	});
+  resetButton.addEventListener("click", function (e) {
+    reset();
+  });
 
-	document.getElementById("subredditField").addEventListener("keyup", function(e){
-		if(e.key == "Enter"){
-			exportJson();
-		}
-	});
+  cancelButton.addEventListener("click", function (e) {
+    reset();
+  });
 
-	exportButton.addEventListener("click", function(e){
-		exportJson();
-	});
+  document.getElementById("nameField").addEventListener("keyup", function (e) {
+    if (e.key == "Enter") {
+      exportJson();
+    }
+  });
 
-	exportCloseButton.addEventListener("click", function(e){
-		reset();
-		exportOverlay.style.display = "none";
-	});
+  document
+    .getElementById("websiteField")
+    .addEventListener("keyup", function (e) {
+      if (e.key == "Enter") {
+        exportJson();
+      }
+    });
 
-	document.getElementById("highlightUncharted").addEventListener("click", function(e){
-		highlightUncharted = this.checked;
-		render(path);
-	});
+  document
+    .getElementById("subredditField")
+    .addEventListener("keyup", function (e) {
+      if (e.key == "Enter") {
+        exportJson();
+      }
+    });
 
-	function exportJson(){		
-		var exportObject = {
-			 id: 0
-			,name: document.getElementById("nameField").value
-			,description: document.getElementById("descriptionField").value
-			,website: document.getElementById("websiteField").value
-			,subreddit: document.getElementById("subredditField").value
-			,center: calculateCenter(path)
-			,path: path
-		};
-		var jsonString = JSON.stringify(exportObject, null, "\t");
-		var textarea = document.getElementById("exportString");
-		jsonString = jsonString.split("\n");
-		jsonString = jsonString.join("\n    ");
-		jsonString = "    "+jsonString;
-		textarea.value = jsonString;
+  exportButton.addEventListener("click", function (e) {
+    exportJson();
+  });
 
-		exportOverlay.style.display = "flex";
-		
-		textarea.focus();
-		textarea.select();
-	}
+  exportCloseButton.addEventListener("click", function (e) {
+    reset();
+    exportOverlay.style.display = "none";
+  });
 
-	function calculateCenter(path){
+  document
+    .getElementById("highlightUncharted")
+    .addEventListener("click", function (e) {
+      highlightUncharted = this.checked;
+      render(path);
+    });
 
-		var area = 0,
-            i,
-            j,
-            point1,
-            point2;
+  function exportJson() {
+    var exportObject = {
+      id: 0,
+      name: document.getElementById("nameField").value,
+      description: document.getElementById("descriptionField").value,
+      website: document.getElementById("websiteField").value,
+      subreddit: document.getElementById("subredditField").value,
+      center: calculateCenter(path),
+      path: path,
+    };
+    var jsonString = JSON.stringify(exportObject, null, "\t");
+    var textarea = document.getElementById("exportString");
+    jsonString = jsonString.split("\n");
+    jsonString = jsonString.join("\n    ");
+    jsonString = "    " + jsonString;
+    textarea.value = jsonString;
 
-        for (i = 0, j = path.length - 1; i < path.length; j=i,i++) {
-            point1 = path[i];
-            point2 = path[j];
-            area += point1[0] * point2[1];
-            area -= point1[1] * point2[0];
-        }
-        area *= 3;
-		
-		var x = 0,
-            y = 0,
-            f;
+    exportOverlay.style.display = "flex";
 
-        for (i = 0, j = path.length - 1; i < path.length; j=i,i++) {
-            point1 = path[i];
-            point2 = path[j];
-            f = point1[0] * point2[1] - point2[0] * point1[1];
-            x += (point1[0] + point2[0]) * f;
-            y += (point1[1] + point2[1]) * f;
-        }
+    textarea.focus();
+    textarea.select();
+  }
 
-        return [~~(x / area)+0.5, ~~(y / area)+0.5];
-        
-	}
+  function calculateCenter(path) {
+    var area = 0,
+      i,
+      j,
+      point1,
+      point2;
 
-	function undo(){
-		if(path.length > 0 && drawing){
-			undoHistory.push(path.pop());
-			redoButton.disabled = false;
-			if(path.length == 0){
-				undoButton.disabled = true;
-			}
-			render(path);
-		}
-	}
+    for (i = 0, j = path.length - 1; i < path.length; j = i, i++) {
+      point1 = path[i];
+      point2 = path[j];
+      area += point1[0] * point2[1];
+      area -= point1[1] * point2[0];
+    }
+    area *= 3;
 
-	function redo(){
-		if(undoHistory.length > 0 && drawing){
-			path.push(undoHistory.pop());
-			undoButton.disabled = false;
-			if(undoHistory.length == 0){
-				redoButton.disabled = true;
-			}
-			render(path);
-		}
-	}
+    var x = 0,
+      y = 0,
+      f;
 
-	function finish(){
-		drawing = false;
-		render(path);
-		objectInfoBox.style.display = "block";
-		hintText.style.display = "none";
-		finishButton.style.display = "none";
-		undoButton.style.display = "none";
-		redoButton.style.display = "none";
-		resetButton.style.display = "none";
-		highlightUnchartedLabel.style.display = "none";
-		document.getElementById("nameField").focus();
-	}
+    for (i = 0, j = path.length - 1; i < path.length; j = i, i++) {
+      point1 = path[i];
+      point2 = path[j];
+      f = point1[0] * point2[1] - point2[0] * point1[1];
+      x += (point1[0] + point2[0]) * f;
+      y += (point1[1] + point2[1]) * f;
+    }
 
-	function reset(){
-		path = [];
-		undoHistory = [];
-		finishButton.disabled = true;
-		undoButton.disabled = true; // Maybe make it undo the cancel action in the future
-		redoButton.disabled = true;
-		drawing = true;
-		render(path);
-		objectInfoBox.style.display = "none";
-		hintText.style.display = "block";
-		finishButton.style.display = "block";
-		undoButton.style.display = "block";
-		redoButton.style.display = "block";
-		resetButton.style.display = "block";
-		highlightUnchartedLabel.style.display = "block";
+    return [~~(x / area) + 0.5, ~~(y / area) + 0.5];
+  }
 
-		document.getElementById("nameField").value = "";
-		document.getElementById("descriptionField").value = "";
-		document.getElementById("websiteField").value = "";
-		document.getElementById("subredditField").value = "";
-	}
+  function undo() {
+    if (path.length > 0 && drawing) {
+      undoHistory.push(path.pop());
+      redoButton.disabled = false;
+      if (path.length == 0) {
+        undoButton.disabled = true;
+      }
+      render(path);
+    }
+  }
 
-	function renderBackground(){
+  function redo() {
+    if (undoHistory.length > 0 && drawing) {
+      path.push(undoHistory.pop());
+      undoButton.disabled = false;
+      if (undoHistory.length == 0) {
+        redoButton.disabled = true;
+      }
+      render(path);
+    }
+  }
 
-		backgroundContext.clearRect(0, 0, canvas.width, canvas.height);
-			
-		backgroundContext.fillStyle = "rgba(0, 0, 0, 1)";
-		//backgroundContext.fillRect(0, 0, canvas.width, canvas.height);
-		
-		for(var i = 0; i < atlas.length; i++){
+  function finish() {
+    drawing = false;
+    render(path);
+    objectInfoBox.style.display = "block";
+    hintText.style.display = "none";
+    finishButton.style.display = "none";
+    undoButton.style.display = "none";
+    redoButton.style.display = "none";
+    resetButton.style.display = "none";
+    highlightUnchartedLabel.style.display = "none";
+    document.getElementById("nameField").focus();
+  }
 
-			var path = atlas[i].path;
-			
-			backgroundContext.beginPath();
+  function reset() {
+    path = [];
+    undoHistory = [];
+    finishButton.disabled = true;
+    undoButton.disabled = true; // Maybe make it undo the cancel action in the future
+    redoButton.disabled = true;
+    drawing = true;
+    render(path);
+    objectInfoBox.style.display = "none";
+    hintText.style.display = "block";
+    finishButton.style.display = "block";
+    undoButton.style.display = "block";
+    redoButton.style.display = "block";
+    resetButton.style.display = "block";
+    highlightUnchartedLabel.style.display = "block";
 
-			if(path[0]){
-				backgroundContext.moveTo(path[0][0], path[0][1]);
-			}
-			
-			for(var p = 1; p < path.length; p++){
-				backgroundContext.lineTo(path[p][0], path[p][1]);
-			}
+    document.getElementById("nameField").value = "";
+    document.getElementById("descriptionField").value = "";
+    document.getElementById("websiteField").value = "";
+    document.getElementById("subredditField").value = "";
+  }
 
-			backgroundContext.closePath();
-			
-			backgroundContext.fill();
-		}
-	}
+  function renderBackground() {
+    backgroundContext.clearRect(0, 0, canvas.width, canvas.height);
 
-	function render(path){
+    backgroundContext.fillStyle = "rgba(0, 0, 0, 1)";
+    //backgroundContext.fillRect(0, 0, canvas.width, canvas.height);
 
-		context.globalCompositeOperation = "source-over";
-		context.clearRect(0, 0, canvas.width, canvas.height);
-		
-		if(highlightUncharted){
-			context.drawImage(backgroundCanvas, 0, 0);
-			context.fillStyle = "rgba(0, 0, 0, 0.4)";
-		} else {
-			context.fillStyle = "rgba(0, 0, 0, 0.6)";
-		}
-		
-		context.fillRect(0, 0, canvas.width, canvas.height);
+    for (var i = 0; i < collage.length; i++) {
+      var path = collage[i].path;
 
-		context.beginPath();
+      backgroundContext.beginPath();
 
-		if(path[0]){
-			context.moveTo(path[0][0], path[0][1]);
-		}
-		
-		for(var i = 1; i < path.length; i++){
-			context.lineTo(path[i][0], path[i][1]);
-		}
+      if (path[0]) {
+        backgroundContext.moveTo(path[0][0], path[0][1]);
+      }
 
-		context.closePath();
+      for (var p = 1; p < path.length; p++) {
+        backgroundContext.lineTo(path[p][0], path[p][1]);
+      }
 
-		context.strokeStyle = "rgba(255, 255, 255, 1)";
-		context.stroke();
+      backgroundContext.closePath();
 
-		context.globalCompositeOperation = "destination-out";
+      backgroundContext.fill();
+    }
+  }
 
-		context.fillStyle = "rgba(0, 0, 0, 1)";
-		context.fill();
-		
-	}
-	
+  function render(path) {
+    context.globalCompositeOperation = "source-over";
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (highlightUncharted) {
+      context.drawImage(backgroundCanvas, 0, 0);
+      context.fillStyle = "rgba(0, 0, 0, 0.4)";
+    } else {
+      context.fillStyle = "rgba(0, 0, 0, 0.6)";
+    }
+
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    context.beginPath();
+
+    if (path[0]) {
+      context.moveTo(path[0][0], path[0][1]);
+    }
+
+    for (var i = 1; i < path.length; i++) {
+      context.lineTo(path[i][0], path[i][1]);
+    }
+
+    context.closePath();
+
+    context.strokeStyle = "rgba(255, 255, 255, 1)";
+    context.stroke();
+
+    context.globalCompositeOperation = "destination-out";
+
+    context.fillStyle = "rgba(0, 0, 0, 1)";
+    context.fill();
+  }
 }
-
-
