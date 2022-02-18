@@ -43,7 +43,7 @@ body {
 
   font-family: Inter, sans, Sans-Serif;
   background-color: #1e1e2e;
-  color: #ffffff;
+  color: #D9E0EE/*ez*/;
 
   line-height: 1.15;
 }
@@ -59,7 +59,7 @@ body {
 }
 
 a {
-  color: #ffaa00;
+  color: #FAE3B0	;
   text-decoration: none;
 }
 
@@ -72,7 +72,7 @@ button,
 #drawBackButton {
   background-image: #888888;
   border: 1px #000000 solid;
-  color: #ffffff;
+  color: #D9E0EE/*ez*/;
   text-align: center;
   display: inline-block;
   padding: 5px;
@@ -101,14 +101,16 @@ button:hover,
 
 input[type="text"],
 textArea {
-  background-color: #444444;
+  background-color: #988BA2	;
   border: 1px #000000 solid;
   margin-bottom: 4px;
-  padding: 5px 5px;
-  color: #ffffff;
+  padding: 5px;
+  color: #D9E0EE/*ez*/;
   box-sizing: border-box;
 }
-
+input[type="text"]::placeholder {
+  color: #D9E0EE	;
+}
 input[type="text"] {
   height: 25px;
 }
@@ -149,18 +151,18 @@ header.aboutHeader {
 
 header > a {
   display: flex;
-  color: #ffffff;
+  color: #D9E0EE/*ez*/;
   /*align-items: center;*/
 }
 
 header > a:hover {
   text-decoration: none;
-  color: #ffaa00;
+  color: #FAE3B0	;
 }
 
 #logo {
   padding: 5px;
-  /*background-color: #FFFFFF;*/
+  /*background-color: #D9E0EE/*ez*/;*/
 }
 
 h1 {
@@ -185,7 +187,7 @@ select {
   background-position: calc(100% - 10px) center, 0 0;
   background-size: 10px, cover;
   border: 1px #222222 outset;
-  color: #ffffff;
+  color: #D9E0EE/*ez*/;
   cursor: pointer;
   padding: 3px;
   padding-left: 7px;
@@ -246,7 +248,7 @@ optgroup {
 
 #loading > div {
   margin: 80px auto;
-  color: #ffffff;
+  color: #D9E0EE/*ez*/;
   text-align: center;
   font-size: 40px;
 }
@@ -257,7 +259,7 @@ optgroup {
   border-radius: 200px;
   border: 7px #cccccc solid;
   display: inline-block;
-  border-top-color: #ffaa00;
+  border-top-color: #FAE3B0	;
 
   animation-duration: 3s;
   animation-name: spinner;
@@ -280,7 +282,7 @@ optgroup {
 }
 
 .error {
-  color: #ffffff;
+  color: #D9E0EE/*ez*/;
   font-size: 23px;
   margin: 15px 0px;
 }
@@ -293,7 +295,7 @@ optgroup {
 }
 
 noscript {
-  color: #ffffff;
+  color: #D9E0EE/*ez*/;
   font-size: 23px;
   display: block;
   margin-top: 10px;
@@ -407,11 +409,12 @@ noscript {
   margin: 10px 10px 0px 0px;
   padding: 10px;
   overflow-x: auto;
+  border-radius: 4px;
 }
 
 .object:hover {
   background-color: #988ba2;
-  border-color: #ffffff;
+  border-color: #D9E0EE/*ez*/;
 }
 
 .object:hover a {
@@ -435,7 +438,7 @@ noscript {
 }
 
 .object h2 a {
-  color: #ffffff;
+  color: #D9E0EE/*ez*/;
   padding: 3px 10px;
   display: block;
   height: 100%;
@@ -443,7 +446,7 @@ noscript {
 }
 
 .object h2 a:hover {
-  color: #ffaa00;
+  color: #FAE3B0	;
 }
 
 .object a {
@@ -634,7 +637,7 @@ input[type="checkbox"] {
   position: absolute;
   bottom: 10px;
   left: 370px;
-  width: 90px;
+  width: 100px;
   display: flex;
 }
 
@@ -646,7 +649,7 @@ input[type="checkbox"] {
   display: inline-block;
   height: 30px;
   width: 30px;
-  margin-left: -1px;
+  margin-left: 4px;
   flex-grow: 1;
   font-size: 20px;
   line-height: 0px;
@@ -655,6 +658,7 @@ input[type="checkbox"] {
   background-repeat: no-repeat;
   background-position: center;
   background-color: #575268;
+  border-radius: 10px;
 }
 
 #zoomControls button:focus {
@@ -755,7 +759,7 @@ button#zoomResetButton {
 #entriesListContainer > nav > button {
   background-image: linear-gradient(to bottom, #888888, #988ba2);
   border: 1px #000000 solid;
-  color: #ffffff;
+  color: #D9E0EE/*ez*/;
   text-align: center;
   display: block;
   padding: 4px;
@@ -794,7 +798,7 @@ button#zoomResetButton {
 
 #entriesListContainer > nav > button:hover > img {
   text-decoration: none;
-  background-image: linear-gradient(to bottom, #ffaa00, #ffaa00);
+  background-image: linear-gradient(to bottom, #FAE3B0	, #FAE3B0	);
   border-radius: 15px;
   padding: 3px;
   margin: -3px;
@@ -875,6 +879,7 @@ button#zoomResetButton {
   color: #cccccc;
   padding: 10px;
   margin-bottom: 10px;
+  border-radius: 4px;
 }
 
 #entriesListControls input:focus {
@@ -1043,7 +1048,7 @@ button#zoomResetButton {
   background-color: #988ba2;
   text-align: center;
   cursor: text;
-  color: #ffffff;
+  color: #D9E0EE/*ez*/;
 }
 
 #bitcoinWindow button,
